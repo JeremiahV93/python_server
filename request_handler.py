@@ -3,18 +3,23 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from animals import get_all_animals
 from animals import get_single_animal
 from animals import create_animal
+from animals import delete_animal
 
 from locations import get_all_locations
 from locations import get_single_location
 from locations import create_location
+from locations import delete_location
 
 from employees import get_all_employees
 from employees import get_single_employee
 from employees import create_employee
+from employees import delete_employee
 
 from customers import get_all_customers
 from customers import get_single_customer
 from customers import create_customer
+from customers import delete_customer
+
 
 import json
 
@@ -131,6 +136,27 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Encode the new animal and send in response
         # self.wfile.write(f"{new_animal}".encode())
         # self.wfile.write(f"{new_customer}".encode())
+
+    # Delete func
+    def do_DELETE(self):
+        # Set a 204 response code
+        self._set_headers(204)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Delete a single animal from the list
+        if resource == "animals":
+            delete_animal(id)
+        elif resource == "customers":
+            delete_customer(id)
+        elif resource == "employees":
+            delete_employee(id)
+        elif resource == "locations":
+            delete_location(id)
+
+        # Encode the new animal and send in response
+        self.wfile.write("".encode())
 
 
     # Here's a method on the class that overrides the parent's method.

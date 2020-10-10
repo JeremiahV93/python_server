@@ -45,3 +45,9 @@ def create_location(location):
     location["id"] = new_id
     LOCATIONS.append(location)
     return location
+
+def delete_location(id):
+    for index, location in enumerate(LOCATIONS):
+        if location["id"] == id:
+            LOCATIONS.pop(index)
+            break
