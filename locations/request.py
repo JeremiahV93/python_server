@@ -3,6 +3,7 @@ LOCATIONS = [
         "id": 1,
         "name": "Central Wing",
         "City": "Nashville",
+        "address": "301 Plus Park Blvd",
         "locationId": 1,
         "customerId": 4
     },
@@ -10,6 +11,7 @@ LOCATIONS = [
         "id": 2,
         "name": "West Wing",
         "City": "Clarksville",
+        "address": "1248 Wilma Rodoulph Blvd",
         "locationId": 1,
         "customerId": 2
     },
@@ -17,6 +19,7 @@ LOCATIONS = [
         "id": 3,
         "name": "East Wing",
         "City": "Knoxville",
+        "address": "301 Plus Park Blvd",
         "locationId": 2,
         "customerId": 1
     }
@@ -35,3 +38,10 @@ def get_single_location(id):
             requested_location = location
 
     return requested_location
+
+def create_location(location):
+    max_id = LOCATIONS[-1]["id"]
+    new_id = max_id + 1
+    location["id"] = new_id
+    LOCATIONS.append(location)
+    return location
