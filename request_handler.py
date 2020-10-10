@@ -4,21 +4,26 @@ from animals import get_all_animals
 from animals import get_single_animal
 from animals import create_animal
 from animals import delete_animal
+from animals import update_animal
+
 
 from locations import get_all_locations
 from locations import get_single_location
 from locations import create_location
 from locations import delete_location
+from locations import update_location
 
 from employees import get_all_employees
 from employees import get_single_employee
 from employees import create_employee
 from employees import delete_employee
+from employees import update_employee
 
 from customers import get_all_customers
 from customers import get_single_customer
 from customers import create_customer
 from customers import delete_customer
+from customers import update_customer
 
 
 import json
@@ -162,7 +167,25 @@ class HandleRequests(BaseHTTPRequestHandler):
     # Here's a method on the class that overrides the parent's method.
     # It handles any PUT request.
     def do_PUT(self):
-        self.do_POST()
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Delete a single animal from the list
+        if resource == "animals":
+            update_animal(id, post_body)
+        elif resource == "customers":
+            update_customer(id, post_body)
+        elif resource == "locations":
+            update_location(id, post_body)
+        elif resource == "employees":
+            update_employee(id, post_body)
+
+        # Encode the new animal and send in response
+        self.wfile.write("".encode())
 
 
 # This function is not inside the class. It is the starting
