@@ -40,3 +40,10 @@ def create_customer(customer):
     customer["id"] = new_id
     CUSTOMERS.append(customer)
     return customer
+
+
+def delete_customer(id):
+    for index, customer in enumerate(CUSTOMERS):
+        if customer["id"] == id:
+            CUSTOMERS.pop(index)
+            break
