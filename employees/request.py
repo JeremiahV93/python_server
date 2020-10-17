@@ -1,47 +1,54 @@
-EMPLOYEES = [
-    {
-        "id": 1,
-        "name": "Jack Doe",
-        "department": "Human Resources",
-        "manager": False,
-        "full_time": True,
-        "hourly_rate": 20,
-        "locationId": 1,
-        "customerId": 4
-    },
-    {
-        "id": 2,
-        "name": "Jane Flo",
-        "department": "Software Engineering",
-        "manager": True,
-        "full_time": True,
-        "hourly_rate": 35,
-        "locationId": 1,
-        "customerId": 2
-    },
-    {
-        "id": 3,
-        "name": "Alex Doe",
-        "department": "Program Management",
-        "manager": False,
-        "full_time": False,
-        "hourly_rate": 17,
-        "locationId": 2,
-        "customerId": 1
-    }
-]
+from models.employee import Employee
+import sqlite3
+import json
+
+EMPLOYEES = []
 
 
 def get_all_employees():
-    return EMPLOYEES
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address,
+            a.location_id
+        FROM employee a
+        """)
+
+        employees = []
+
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            employee = Employee(row['id'], row['name'], row['address'], row['location_id'])
+            employees.append(employee.__dict__)
+
+    return json.dumps(employees)
 
 def get_single_employee(id):
-    requested_employee = None
-    for employee in EMPLOYEES:
-        if employee["id"] == id:
-            requested_employee = employee
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
 
-    return requested_employee
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address,
+            a.location_id
+        FROM employee a
+        WHERE a.id = ?
+        """, ( id, ))
+
+        data = db_cursor.fetchone()
+
+        employee = Employee(data['id'], data['name'], data['address'], data['location_id'])
+
+        return json.dumps(employee.__dict__)
 
 def create_employee(employee):
     max_id = EMPLOYEES[-1]["id"]
