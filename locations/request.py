@@ -1,43 +1,57 @@
+from models.location import Location
+import sqlite3
+import json
+
 LOCATIONS = [
-    {
-        "id": 1,
-        "name": "Central Wing",
-        "City": "Nashville",
-        "address": "301 Plus Park Blvd",
-        "locationId": 1,
-        "customerId": 4
-    },
-    {
-        "id": 2,
-        "name": "West Wing",
-        "City": "Clarksville",
-        "address": "1248 Wilma Rodoulph Blvd",
-        "locationId": 1,
-        "customerId": 2
-    },
-    {
-        "id": 3,
-        "name": "East Wing",
-        "City": "Knoxville",
-        "address": "301 Plus Park Blvd",
-        "locationId": 2,
-        "customerId": 1
-    }
+    Location(1, "Central Wing", "301 Plus Park"),
+    Location(2, "West Wing", "1248 Wilma Rodoulph Blvd"),
+    Location(3, "East Wing", "301 Plus Park")
 ]
 
 
 def get_all_locations():
-    return LOCATIONS
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address
+        FROM location a
+        """)
+
+        locations = []
+
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            location = Location(row['id'], row['name'], row['address'])
+            locations.append(location.__dict__)
+
+    return json.dumps(locations)
 
 
 def get_single_location(id):
-    requested_locaton = None
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
 
-    for location in LOCATIONS:
-        if location["id"] == id:
-            requested_location = location
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address
+        FROM location a
+        WHERE a.id = ?
+        """, ( id, ))
 
-    return requested_location
+        data = db_cursor.fetchone()
+
+        location = Location(data['id'], data['name'], data['address'])
+
+        return json.dumps(location.__dict__)
 
 def create_location(location):
     max_id = LOCATIONS[-1]["id"]

@@ -1,41 +1,56 @@
-CUSTOMERS = [
-  {
-        "id": 1,
-        "name": "Hannah Hall",
-        "business": "NSS",
-        "locationId": 1,
-        "customerId": 4,
-        "registered": False
-    },
-    {
-        "id": 2,
-        "name": "Brain Neal",
-        "business": "NSS Day",
-        "locationId": 1,
-        "customerId": 2,
-        "registered": False
-    },
-    {
-        "id": 3,
-        "name": "Mitchell Blom",
-        "business": "NSS Evening",
-        "locationId": 2,
-        "customerId": 1,        
-        "registered": False
-    }
-]
+from models.customer import Customer
+import sqlite3
+import json
+
+CUSTOMERS = []
 
 
 def get_all_customers():
-    return CUSTOMERS
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address,
+            a.email,
+            a.password
+        FROM customer a
+        """)
+
+        customers = []
+
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            customer = Customer(row['id'], row['name'], row['address'], row['email'], row['password'])
+            customers.append(customer.__dict__)
+
+    return json.dumps(customers)
 
 def get_single_customer(id):
-    requested_customer =  None
-    for customer in CUSTOMERS:
-        if customer["id"] == id:
-            requested_customer = customer
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
 
-    return requested_customer
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address,
+            a.email,
+            a.password
+        FROM customer a
+        WHERE a.id = ?
+        """, ( id, ))
+
+        data = db_cursor.fetchone()
+
+        customer = Customer(data['id'], data['name'], data['address'], data['email'], data['password'])
+
+        return json.dumps(customer.__dict__)
 
 def create_customer(customer):
     max_id = CUSTOMERS[-1]["id"]
