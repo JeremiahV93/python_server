@@ -6,6 +6,7 @@ from animals import create_animal
 from animals import delete_animal
 from animals import update_animal
 from animals import get_animals_by_location
+from animals import get_animals_by_status
 
 
 from locations import get_all_locations
@@ -125,6 +126,8 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = get_animals_by_location(value)
             elif key == "location_id" and resource == "employees":
                 response = get_employees_by_location(value)
+            elif key == "status" and resource == "animals":
+                response = get_animals_by_status(value)
 
         self.wfile.write(response.encode())
 
