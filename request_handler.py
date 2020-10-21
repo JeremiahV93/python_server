@@ -211,10 +211,10 @@ class HandleRequests(BaseHTTPRequestHandler):
             success = update_animal(id, post_body)
         elif resource == "customers":
             success = update_customer(id, post_body)
-        # elif resource == "locations":
-        #     success = update_location(id, post_body)
-        # elif resource == "employees":
-        #     success = update_employee(id, post_body)
+        elif resource == "locations":
+            success = update_location(id, post_body)
+        elif resource == "employees":
+            success = update_employee(id, post_body)
         
 
         if success:
